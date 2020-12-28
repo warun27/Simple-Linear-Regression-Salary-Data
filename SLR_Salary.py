@@ -1,0 +1,51 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+sal = pd.read_csv("G:\DS Assignments\Salary_Data.csv")
+print(sal)
+plt.hist(sal.Salary)
+plt.boxplot(sal.Salary)
+sal.boxplot(return_type = "axes", figsize = (20, 20))
+sal.describe()
+plt.plot(sal.Salary, sal.YearsExperience, "bo")
+import statsmodels.formula.api as smf
+model = smf.ols(" Salary ~ YearsExperience", data = sal).fit()
+model.params
+print(model.Summary)
+import statsmodels.api as sm
+model.RegressionResults.summary
+print(model.summary())
+print(model.conf_int(0.05))
+pred = model.predict(sal.iloc[ : , 0])
+print(sal.head())
+print(pred)
+error = sal.Salary - pred
+print(error)
+pred.corr(sal.Salary)
+plt.scatter(x = sal["YearsExperience"] , y = sal["Salary"])
+plt.scatter(x = sal["YearsExperience"] , y = pred)
+#Accuracy = 95% #
+model2 = smf.ols(" Salary ~ np.log(YearsExperience)", data = sal).fit()
+model2.summary()
+pred2 = model2.predict(sal.iloc[ : , 0 ])
+print(sal.Salary - pred2)
+pred2.corr(sal.Salary)
+plt.scatter(x = sal["YearsExperience"] , y = sal["Salary"])
+plt.scatter(x = sal["YearsExperience"] , y = pred2)
+model3 = smf.ols(" np.log(Salary) ~ YearsExperience", data = sal).fit()
+model3.summary()
+pred3 = model3.predict(sal.iloc[:,0])
+pred3_exp = np.exp(pred3)
+pred3_exp.corr(sal.Salary)
+plt.scatter(x = sal["YearsExperience"] , y = sal["Salary"])
+plt.scatter(x = sal["YearsExperience"] , y = pred3_exp)
+RMSE_model = np.sqrt(np.mean((sal.Salary - pred)**2))
+print(RMSE_model)
+RMSE_model2 = np.sqrt(np.mean((sal.Salary - pred2)**2))
+print(RMSE_model2)
+RMSE_model3 = np.sqrt(np.mean((sal.Salary - pred3_exp)**2))
+print(RMSE_model3)
+plt.plot(model.resid_pearson,"o")
+plt.plot(model2.resid_pearson,"o")
+plt.plot(model3.resid_pearson,"o")
+print(model.resid_pearson)
